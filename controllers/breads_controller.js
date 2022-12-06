@@ -2,17 +2,6 @@ const express = require('express')
 const breads = express.Router()
 const Bread = require('../models/bread.js')
 // somewhere at the top with the other dependencies 
-const Baker = require('../models/baker.js')
-
-// in the new route
-breads.get('/new', (req, res) => {
-    Baker.find()
-        .then(foundBakers => {
-            res.render('new', {
-                bakers: foundBakers
-            })
-      })
-})
 
 
 breads.get('/', (req, res) => {
@@ -43,10 +32,6 @@ breads.get('/:indexArray/edit', (req, res) => {
     })
   })
 })
-baker.get('/data/seed', (req, res) => {
-  Baker.insertMany(bakerSeedData)
-      .then(res.redirect('/breads'))
-})
 
       
 
@@ -55,22 +40,19 @@ baker.get('/data/seed', (req, res) => {
 
 // SHOW
 // SHOW
-breads.get('/:arrayIndex', (req, res) => {
-   Bread.findById(req.params.id)
-        .then(foundBread => {
-            res.render('show', {
-                bread: foundBread
-            })
+// SHOW
+breads.get('/:id', (req, res) => {
+  Bread.findById(req.params.id)
+      .then(foundBread => {
+        const bakedBy = foundBread.getBakedBy() 
+        console.log(bakedBy)
+        res.render('show', {
+            bread: foundBread
         })
-})
-  if (Bread[req.params.arrayIndex]) {
-    res.render('Show', {
-      bread:Bread[req.params.arrayIndex],
-      index: req.params.arrayIndex,
+      })
     })
-  } else {
-    res.render('404')
-  }
+
+
 
   
   
@@ -110,7 +92,7 @@ breads.post('/', (req, res) => {
   } else {
     req.body.hasGluten = false
   }
-  Bread.push(req.body)
+  Bread.create(req.body)
   res.redirect('/breads')
 })
 
